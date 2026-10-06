@@ -215,7 +215,6 @@
     <div class="m-body"><p id="mText"></p></div>
     <div class="m-q"><span class="qb">Q</span><strong id="mQ"></strong></div>
     <div class="m-foot">
-      <button class="btn btn-kakao" id="mCopy">💬 카톡용 텍스트 복사</button>
       <button class="btn btn-main" id="mNext">🎁 다른 주머니 뽑기</button>
       <button class="btn btn-sub" id="mDone">닫기</button>
     </div>
@@ -425,7 +424,6 @@ let lastFocus = null;
 
 function openPouch(i){
   const p = POUCHES[i];
-  currentIdx = i;
   const [c, cd] = colorOf(i);
   modal.style.setProperty("--c", c);
   modal.style.setProperty("--cd", cd);
@@ -535,12 +533,6 @@ document.getElementById("shareBtn").addEventListener("click", async () => {
   copy(`${text}\n${url}`, "링크를 복사했어요. 카톡 대화창에 붙여넣어 주세요.");
 });
 
-let currentIdx = null;
-document.getElementById("mCopy").addEventListener("click", () => {
-  const p = POUCHES[currentIdx]; if (!p) return;
-  const text = `🎁 행복대화 복주머니 ${pad(currentIdx + 1)}\n\n「${p.quote}」\n(${p.source})\n\n${p.text}\n\nQ. ${p.q}\n\n👉 ${pageUrl()}`;
-  copy(text, "복사했어요. 카톡 대화창에 붙여넣어 주세요.");
-});
 
 renderTabs();
 renderGrid();
