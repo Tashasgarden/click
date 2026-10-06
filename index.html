@@ -7,6 +7,9 @@
 <meta name="description" content="한국SGI 좌담회 행복대화 – 복운 주머니에 담긴 어서와 이케다 선생님 스피치를 뽑고 질문에 답해 보세요.">
 <meta property="og:title" content="행복대화 · 나의 복주머니 뽑기">
 <meta property="og:description" content="복운 주머니에 담긴 어서와 스피치를 뽑고, 질문에 답하며 희사의 마음을 키워갑시다.">
+<!-- 배포 후 og:image를 절대주소로 바꾸면 카톡 미리보기 이미지가 나옵니다. 예: https://내사이트.netlify.app/og-image.png -->
+<meta property="og:image" content="og-image.png">
+<meta property="og:type" content="website">
 <meta name="theme-color" content="#FAF6EA">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M30 30 Q50 5 70 30 Q95 40 90 70 Q85 95 50 95 Q15 95 10 70 Q5 40 30 30Z' fill='%23E8A06A'/%3E%3Ccircle cx='50' cy='65' r='20' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -73,6 +76,13 @@
   .btn-main{background:var(--orange);color:#fff;box-shadow:0 4px 0 var(--orange-deep)}
   .btn-main:hover{filter:brightness(1.04)}
   .btn-sub{background:var(--paper);color:var(--ink-soft);border:2px solid var(--line)}
+  .btn-kakao{background:#FEE500;color:#3A1D1D;box-shadow:0 4px 0 #D9C200}
+  .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-size:15px;font-weight:500;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:calc(100% - 32px);text-align:center}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .copybox{padding:22px 20px 0;max-width:460px}
+  .copybox p{margin:0 0 10px;font-size:15px}
+  .copybox textarea{width:100%;font:inherit;font-size:14px;border:2px solid var(--line);border-radius:12px;padding:10px;resize:none;background:#FFFDF7;color:var(--ink)}
+  #copyBox{z-index:90}
   .counter{text-align:center;color:var(--ink-soft);font-size:14px;margin:4px 0 0}
 
   /* ---------- pouch grid ---------- */
@@ -173,6 +183,7 @@
   </div>
   <div class="actions">
     <button class="btn btn-main" id="randomBtn">🎁 랜덤으로 뽑기</button>
+    <button class="btn btn-kakao" id="shareBtn">💬 카톡으로 공유</button>
     <button class="btn btn-sub" id="resetBtn">↺ 처음부터</button>
   </div>
   <p class="counter" id="counter"></p>
@@ -204,9 +215,19 @@
     <div class="m-body"><p id="mText"></p></div>
     <div class="m-q"><span class="qb">Q</span><strong id="mQ"></strong></div>
     <div class="m-foot">
+      <button class="btn btn-kakao" id="mCopy">💬 카톡용 텍스트 복사</button>
       <button class="btn btn-main" id="mNext">🎁 다른 주머니 뽑기</button>
       <button class="btn btn-sub" id="mDone">닫기</button>
     </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="overlay" id="copyBox" aria-hidden="true">
+  <div class="modal copybox">
+    <p><b>아래 내용을 길게 눌러 복사</b>한 뒤 카톡 대화창에 붙여넣어 주세요.</p>
+    <textarea id="copyText" readonly rows="6"></textarea>
+    <div class="m-foot"><button class="btn btn-sub" id="copyClose">닫기</button></div>
   </div>
 </div>
 
@@ -404,6 +425,7 @@ let lastFocus = null;
 
 function openPouch(i){
   const p = POUCHES[i];
+  currentIdx = i;
   const [c, cd] = colorOf(i);
   modal.style.setProperty("--c", c);
   modal.style.setProperty("--cd", cd);
@@ -466,6 +488,7 @@ document.getElementById("mDone").addEventListener("click", closeModal);
 document.getElementById("mNext").addEventListener("click", () => { closeModal(); randomDraw(); });
 overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
 document.addEventListener("keydown", e => {
+  if (copyBox.classList.contains("show")) { if (e.key === "Escape") document.getElementById("copyClose").click(); return; }
   if (!overlay.classList.contains("show")) return;
   if (e.key === "Escape") closeModal();
   if (e.key === "Tab") { // keep focus inside popup
@@ -474,6 +497,49 @@ document.addEventListener("keydown", e => {
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
+});
+
+/* ---------- 카톡 공유 ---------- */
+// 배포 후 실제 주소가 정해지면 여기에 넣어 두면 어디서 열어도 그 주소로 공유됩니다.
+const SHARE_URL = "";
+const pageUrl = () => SHARE_URL || location.href.split("#")[0];
+
+const toast = document.getElementById("toast");
+let toastTimer;
+function showToast(msg){
+  toast.textContent = msg; toast.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+}
+const copyBox = document.getElementById("copyBox");
+const copyText = document.getElementById("copyText");
+function manualCopy(text){
+  copyText.value = text;
+  copyBox.classList.add("show"); copyBox.setAttribute("aria-hidden", "false");
+  copyText.focus(); copyText.select();
+}
+document.getElementById("copyClose").addEventListener("click", () => {
+  copyBox.classList.remove("show"); copyBox.setAttribute("aria-hidden", "true");
+});
+async function copy(text, okMsg){
+  try { await navigator.clipboard.writeText(text); showToast(okMsg); }
+  catch (e) { manualCopy(text); }
+}
+
+document.getElementById("shareBtn").addEventListener("click", async () => {
+  const url = pageUrl();
+  const text = "🎁 행복대화 · 나의 복주머니 뽑기\n복주머니를 열고 어서와 질문으로 이야기 나눠요!";
+  if (navigator.share) {
+    try { await navigator.share({ title: "행복대화 복주머니 뽑기", text, url }); return; }
+    catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  copy(`${text}\n${url}`, "링크를 복사했어요. 카톡 대화창에 붙여넣어 주세요.");
+});
+
+let currentIdx = null;
+document.getElementById("mCopy").addEventListener("click", () => {
+  const p = POUCHES[currentIdx]; if (!p) return;
+  const text = `🎁 행복대화 복주머니 ${pad(currentIdx + 1)}\n\n「${p.quote}」\n(${p.source})\n\n${p.text}\n\nQ. ${p.q}\n\n👉 ${pageUrl()}`;
+  copy(text, "복사했어요. 카톡 대화창에 붙여넣어 주세요.");
 });
 
 renderTabs();
