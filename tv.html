@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>행복대화 복주머니 TV</title>
+<meta name="description" content="한국SGI 좌담회 행복대화 – TV 화면용 복주머니 뽑기 (가로 한 화면)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* 1920×1080 무대를 화면 크기에 맞춰 통째로 확대·축소 → 어떤 TV에서도 한 화면 */
+  :root{
+    color-scheme:light;
+    --bg:#FAF6EA; --paper:#FFFFFF; --ink:#2E2B28; --ink-soft:#5A544D; --line:#E7DFCB;
+    --mint:#CFE3CF; --gold:#C9A86A;
+    --orange:#E8A06A; --orange-deep:#D07A3E;
+    --purple:#7E6BA8; --purple-deep:#5C4B8A;
+    --blue:#86C3E0;   --blue-deep:#4E9CC6;
+    --pink:#E097A8;   --pink-deep:#C9607A;
+    --green:#8DBF8F;  --green-deep:#5E9A62;
+    --yellow:#F2D58A; --yellow-deep:#D9A93A;
+    --band-y:#F3D98F; --band-p:#E9AEB8; --band-m:#CFE3CF;
+    --display:"Black Han Sans","Noto Sans KR",sans-serif;
+    --body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    --soft:"Gowun Dodum","Noto Sans KR",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  #stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;overflow:hidden;background:var(--bg)}
+
+  /* ---------- header ---------- */
+  header{position:absolute;left:0;right:0;top:0;height:250px;display:flex;align-items:center;justify-content:space-between;padding:0 90px}
+  .brand{display:flex;flex-direction:column;gap:2px}
+  .eyebrow{display:flex;align-items:center;gap:16px;font-family:var(--display);font-size:40px;letter-spacing:.4em;color:var(--ink)}
+  .diamonds{display:inline-flex;gap:6px;color:#A99E8C}
+  .diamonds i{width:14px;height:14px;background:currentColor;transform:rotate(45deg);display:block}
+  h1{margin:0;font-family:var(--display);font-weight:400;font-size:112px;line-height:1.08;letter-spacing:.02em}
+  h1 .c1{color:var(--blue)} h1 .c2{color:var(--orange)} h1 .c3{color:var(--pink)} h1 .c4{color:var(--purple)}
+  .side{display:flex;flex-direction:column;align-items:flex-end;gap:18px;margin-right:170px}
+  .lead{margin:0;text-align:right;font-size:28px;line-height:1.5;color:var(--ink-soft)}
+  .lead b{color:var(--ink);font-weight:900} .lead em{font-style:normal;color:var(--orange-deep);font-weight:900}
+  .actions{display:flex;gap:14px}
+  .btn{border:0;font:inherit;font-weight:900;cursor:pointer;border-radius:999px;padding:18px 36px;font-size:30px;transition:transform .12s}
+  .btn:active{transform:translateY(2px)}
+  .btn:focus-visible{outline:4px solid var(--gold);outline-offset:4px}
+  .btn-main{background:var(--orange);color:#fff;box-shadow:0 6px 0 var(--orange-deep)}
+  .btn-sub{background:var(--paper);color:var(--ink-soft);border:3px solid var(--line);padding:15px 28px}
+
+  /* ---------- pouches (6 × 2) ---------- */
+  .grid{position:absolute;left:70px;right:70px;top:262px;display:grid;grid-template-columns:repeat(6,1fr);gap:22px 26px;margin:0;padding:0;list-style:none}
+  .pouch{position:relative;display:block;width:100%;background:none;border:0;padding:0;cursor:pointer;font:inherit;color:inherit}
+  .pouch svg{width:100%;height:auto;display:block;filter:drop-shadow(0 8px 8px rgba(120,100,60,.16));transition:transform .2s}
+  .pouch:hover svg,.pouch:focus-visible svg{transform:translateY(-6px) rotate(-2deg)}
+  .pouch:focus-visible{outline:4px solid var(--gold);outline-offset:6px;border-radius:24px}
+  .pouch .num{position:absolute;left:1%;top:27%;width:29%;aspect-ratio:1;border-radius:50%;background:#fff;border:6px solid var(--mint);display:grid;place-items:center;font-family:var(--display);font-size:36px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+  .pouch .face{position:absolute;left:20%;right:20%;top:46%;height:32%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px}
+  .pouch .face b{font-size:34px;font-weight:900;line-height:1.15;word-break:keep-all}
+  .pouch .face small{font-size:21px;color:var(--ink-soft);font-weight:500}
+  .pouch.opened svg{opacity:.45}
+  .pouch.opened .face b{opacity:.55}
+  .pouch.opened .face::after{content:"✓ 나눔 완료";font-size:20px;color:var(--green-deep);font-weight:900}
+  .pouch.opened .face small{display:none}
+  .pouch.shake svg{animation:shake .5s ease-in-out infinite}
+  .pouch.picked svg{animation:pop .6s ease}
+  @keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.15) rotate(-4deg)}100%{transform:scale(1)}}
+
+  /* ---------- deco ---------- */
+  .waves{position:absolute;left:0;right:0;bottom:0;height:46px;opacity:.6;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cg fill='%23FAF6EA' stroke='%23D8CDB4' stroke-width='1.4'%3E%3Ccircle cx='0' cy='20' r='19'/%3E%3Ccircle cx='0' cy='20' r='12'/%3E%3Ccircle cx='0' cy='20' r='5'/%3E%3Ccircle cx='40' cy='20' r='19'/%3E%3Ccircle cx='40' cy='20' r='12'/%3E%3Ccircle cx='40' cy='20' r='5'/%3E%3Ccircle cx='20' cy='30' r='19'/%3E%3Ccircle cx='20' cy='30' r='12'/%3E%3Ccircle cx='20' cy='30' r='5'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:40px 20px}
+  .pine{position:absolute;right:0;top:10px;width:250px}
+  .tassel{position:absolute;left:50%;top:0;width:24px;height:96px;margin-left:-12px}
+  .note{position:absolute;left:0;right:0;bottom:50px;text-align:center;font-size:18px;color:var(--ink-soft)}
+
+  /* ---------- popup ---------- */
+  .overlay{position:absolute;inset:0;background:rgba(46,43,40,.6);display:none;align-items:center;justify-content:center;z-index:50}
+  .overlay.show{display:flex;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .modal{position:relative;width:1500px;background:var(--paper);border-radius:40px;box-shadow:0 30px 80px rgba(0,0,0,.3);animation:rise .4s cubic-bezier(.2,.9,.3,1.2);overflow:hidden}
+  @keyframes rise{from{transform:translateY(40px) scale(.94);opacity:0}to{transform:none;opacity:1}}
+  .m-head{background:var(--c);padding:30px 44px 80px;color:#fff;display:flex;align-items:center;gap:18px}
+  .m-head .tag{background:rgba(255,255,255,.25);padding:8px 22px;border-radius:999px;font-size:28px;font-weight:900}
+  .m-head .mnum{font-family:var(--display);font-size:34px}
+  .m-close{margin-left:auto;width:64px;height:64px;border-radius:50%;border:0;background:rgba(255,255,255,.3);color:#fff;font-size:40px;line-height:1;cursor:pointer}
+  .m-quote{position:relative;margin:-56px 40px 0;background:#fff;border:8px solid var(--mint);border-radius:36px;padding:34px 40px 28px;text-align:center}
+  .m-quote::before{content:"";position:absolute;left:12%;right:12%;bottom:-8px;height:8px;background:linear-gradient(90deg,var(--band-y) 0 40%,var(--band-p) 40% 60%,var(--band-m) 60% 100%)}
+  .m-quote blockquote{margin:0;font-weight:900;font-size:56px;line-height:1.4;word-break:keep-all;text-wrap:balance}
+  .m-quote cite{display:block;margin-top:14px;font-style:normal;font-weight:700;font-size:30px;color:var(--ink-soft)}
+  .m-body{padding:30px 60px 0}
+  .m-body p{margin:0;font-family:var(--soft);font-size:34px;line-height:1.6;word-break:keep-all}
+  .m-q{margin:30px 60px 0;display:flex;gap:18px;align-items:flex-start;color:var(--cd)}
+  .m-q .qb{flex:none;width:58px;height:58px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:900;font-size:34px;margin-top:4px}
+  .m-q strong{font-size:48px;font-weight:900;line-height:1.35;word-break:keep-all}
+  .m-foot{display:flex;gap:16px;justify-content:center;padding:36px 40px 40px}
+  .m-foot .btn-main{background:var(--c);box-shadow:0 6px 0 var(--cd)}
+
+  .hint{position:absolute;right:90px;bottom:54px;font-size:18px;color:#A99E8C}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg class="tassel" viewBox="0 0 28 110" aria-hidden="true">
+    <line x1="14" y1="0" x2="14" y2="30" stroke="#C9A86A" stroke-width="2"/>
+    <circle cx="14" cy="16" r="6" fill="none" stroke="#C9A86A" stroke-width="2"/>
+    <path d="M8 34 h12 M6 40 h16 M8 46 h12" stroke="#C9A86A" stroke-width="2"/>
+    <rect x="9" y="50" width="10" height="6" rx="2" fill="#C9A86A"/>
+    <path d="M9 56 L5 108 H23 L19 56Z" fill="#D8BC83"/>
+  </svg>
+  <svg class="pine" viewBox="0 0 200 160" aria-hidden="true">
+    <path d="M200 120 Q150 90 110 70 L100 62" stroke="#A38C78" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M140 88 Q130 60 150 40" stroke="#A38C78" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <g fill="#7FA57D"><ellipse cx="95" cy="55" rx="34" ry="20"/><ellipse cx="152" cy="35" rx="30" ry="18"/><ellipse cx="190" cy="100" rx="28" ry="16"/></g>
+    <g stroke="#DDEBD9" stroke-width="2" fill="none"><path d="M80 52 l8 8 M95 46 v12 M110 52 l-8 8"/><path d="M140 30 l8 8 M152 25 v12 M165 30 l-8 8"/></g>
+    <g transform="translate(118 50)"><ellipse cx="14" cy="10" rx="14" ry="8" fill="#3A3E45"/><circle cx="2" cy="4" r="6" fill="#2A2D33"/><path d="M-4 4 l-6 1 l6 1z" fill="#2A2D33"/><path d="M8 10 q8 6 16 2 l20 -2 l-18 6z" fill="#fff"/><path d="M24 8 l22 -2 l-20 6z" fill="#2A2D33"/><path d="M10 18 v6 M16 18 v6" stroke="#2A2D33" stroke-width="1.5"/></g>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="eyebrow"><span class="diamonds" aria-hidden="true"><i></i><i></i><i></i></span>행복대화</div>
+      <h1>나<span class="c1">의</span> <span class="c2">복</span>주머<span class="c3">니</span> 뽑<span class="c4">기</span></h1>
+    </div>
+    <div class="side">
+      <p class="lead"><b>'복운 주머니'에 담긴 <em>어서·스피치</em>를 뽑아보세요!</b><br>질문에 답하며 희사의 마음을 키워갑시다.</p>
+      <div class="actions">
+        <button class="btn btn-main" id="randomBtn">🎁 랜덤 뽑기</button>
+        <button class="btn btn-sub" id="fsBtn">⛶ 전체화면</button>
+        <button class="btn btn-sub" id="resetBtn">↺ 처음부터</button>
+      </div>
+    </div>
+  </header>
+
+  <ul class="grid" id="grid" aria-label="복주머니 12개"></ul>
+
+  <p class="note">어서 쪽수는 『니치렌대성인 어서전집』 한국어판 기준</p>
+  <p class="hint">스페이스: 랜덤 뽑기 · Esc: 닫기 · F: 전체화면</p>
+  <div class="waves" aria-hidden="true"></div>
+
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mQuote" id="modal">
+      <div class="m-head">
+        <span class="tag" id="mTag"></span><span class="mnum" id="mNum"></span>
+        <button class="m-close" id="mClose" aria-label="닫기">×</button>
+      </div>
+      <div class="m-quote">
+        <blockquote id="mQuote"></blockquote>
+        <cite id="mCite"></cite>
+      </div>
+      <div class="m-body"><p id="mText"></p></div>
+      <div class="m-q"><span class="qb">Q</span><strong id="mQ"></strong></div>
+      <div class="m-foot">
+        <button class="btn btn-main" id="mNext">🎁 다른 주머니 뽑기</button>
+        <button class="btn btn-sub" id="mDone">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* 복주머니 12개 – 항목을 바꾸면 화면에 그대로 반영됩니다 (12개 유지 권장) */
+const POUCHES = [
+  { topic:"공양", type:"어서",
+    quote:"법화경을 공양하는 사람은 시방(十方)의 불보살을 공양하는 공덕과 같으니라.",
+    source:"어서 1316쪽",
+    text:"법화경은 시방의 모든 부처를 탄생시킨 근본법입니다. 그러므로 법화경에 공양하는 것은 곧 시방의 모든 부처를 공양하는 것과 같습니다.",
+    q:"요즘 내가 꾸준히 실천하고 있는 신·행·학 도전은 무엇인가요?" },
+  { topic:"공양", type:"어서",
+    quote:"백미(白米)는 백미가 아니라 즉 목숨이니라.",
+    source:"백미일표어서 · 어서 1597쪽",
+    text:"문하가 정성껏 바친 백미(쌀)에 대한 답례로 쓰신 말씀입니다. 대성인은 그 진심을 옛 성인들이 부처와 법을 위해 목숨을 바친 것과 다름없다고 말씀하셨습니다.",
+    q:"따뜻한 밥 한 끼를 함께 하고 싶은 사람이 있나요?" },
+  { topic:"공양", type:"어서",
+    quote:"한 벌의 단삼(單衫)이기는 하지만 법화경의 일체의 문자의 부처에게 바치는 것이니라.",
+    source:"어서 1231쪽",
+    text:"홑옷 한 벌이지만 그 공덕은 모든 부처에게 공양한 것과 같으며, 부모와 조부모, 나아가 수많은 중생에게까지 미칠 것이라고 칭찬하셨습니다.",
+    q:"나의 복운을 나눠주고 싶은 사람은 누구인가요?" },
+  { topic:"공양", type:"어서",
+    quote:"마음이 어리석고 조그마한 것이라도 진실한 사람에게 공양하면 공덕이 크니라.",
+    source:"어서 1595쪽",
+    text:"서툴고 부족해도 진실한 마음을 다한다면 그 공덕은 결코 작지 않다고 말씀하셨습니다.",
+    q:"신심을 실천하며 가장 기뻤던 순간은 언제였나요?" },
+  { topic:"청년육성", type:"어서",
+    quote:"원컨대 나의 제자들이여, 대원(大願)을 일으켜라.",
+    source:"상야전어반사 · 어서 1561쪽",
+    text:"청년 난조 도키미쓰에게 보내신 말씀입니다. 작은 고민을 넘어 광선유포라는 큰 서원을 세우라고 젊은 제자를 격려하셨습니다.",
+    q:"함께 성장하고 싶은 청년(후배)은 누구인가요? 어떤 격려를 전하고 싶나요?" },
+  { topic:"청년육성", type:"스피치",
+    quote:"청년이여, 21세기의 광포의 산을 오르라.",
+    source:"이케다 선생님 장편시 「청년이여 21세기의 광포의 산을 오르라」",
+    text:"이케다 선생님은 청년들에게 미래를 맡기며, 스스로 산을 오르는 주인공이 되라고 호소하셨습니다. 청년을 소중히 키우는 것이 학회의 전통입니다.",
+    q:"우리 지구(地區) 청년부에게 전하고 싶은 응원 메시지는?" },
+  { topic:"체험담", type:"어서",
+    quote:"법화경을 믿는 사람은 겨울과 같으니, 겨울은 반드시 봄이 되느니라.",
+    source:"묘일니어전어소식 · 어서 1253쪽",
+    text:"지금이 아무리 혹독한 겨울 같아도, 신심을 관철하는 사람에게는 반드시 봄이 찾아옵니다.",
+    q:"겨울 같은 시련을 '봄'으로 바꾼 나의 체험을 나눠 주세요." },
+  { topic:"체험담", type:"어서",
+    quote:"남묘호렌게쿄는 사자후와 같으니, 어떠한 병이 장애가 되리오.",
+    source:"경왕전어반사 · 어서 1124쪽",
+    text:"창제는 사자의 포효와 같아서 어떠한 장애도 이겨낼 수 있습니다. 확신 있는 기원이 모든 것을 여는 원동력입니다.",
+    q:"창제로 어려움을 돌파했던 경험이 있나요?" },
+  { topic:"체험담", type:"스피치",
+    quote:"한 사람의 위대한 인간혁명은 이윽고 한 국가의 숙명도 전환하고, 나아가 전 인류의 숙명 전환도 가능하게 한다.",
+    source:"이케다 선생님 소설 『인간혁명』 서문",
+    text:"모든 변화는 '나 한 사람'의 변혁에서 시작됩니다. 한 사람의 체험이 가족과 지역을 바꾸는 희망의 출발점입니다.",
+    q:"신심을 하며 '내가 이렇게 변했다' 싶은 순간은 언제였나요?" },
+  { topic:"이달의 법련", type:"어서",
+    quote:"행학의 이도(二道)를 힘쓸지어다. 행학이 끊어지면 불법은 없느니라.",
+    source:"제법실상초 · 어서 1361쪽",
+    text:"신심은 '행(실천)'과 '학(교학)'의 두 길로 깊어집니다. 『법련』을 읽는 것도 소중한 '학'의 실천입니다.",
+    q:"이달 『법련』에서 가장 감명 깊게 읽은 내용은 무엇인가요?" },
+  { topic:"이달의 법련", type:"스피치",
+    quote:"평화보다 존귀한 것은 없다. 평화보다 행복한 것은 없다.",
+    source:"이케다 선생님 소설 『신·인간혁명』 제1권 「욱일」",
+    text:"『신·인간혁명』은 이 평화의 선언으로 시작됩니다. 우리의 대화 한 마디 한 마디가 평화를 넓히는 실천입니다.",
+    q:"이달 『법련』의 이케다 선생님 지도 중 실천해 보고 싶은 것은?" },
+  { topic:"화합", type:"어서",
+    quote:"희(喜)란 자타 함께 기뻐하는 것이니라.",
+    source:"어의구전 · 어서 761쪽",
+    text:"진정한 기쁨은 나와 남이 함께 기뻐하는 것입니다. 벗의 행복을 내 일처럼 기뻐하는 마음이 희사의 마음입니다.",
+    q:"최근 누군가와 '함께 기뻐했던' 순간은 언제였나요?" }
+];
+
+const PALETTE = [
+  ["var(--orange)","var(--orange-deep)"], ["var(--purple)","var(--purple-deep)"],
+  ["var(--blue)","var(--blue-deep)"],     ["var(--pink)","var(--pink-deep)"],
+  ["var(--green)","var(--green-deep)"],   ["var(--yellow)","var(--yellow-deep)"]
+];
+const STORE_KEY = "sgi-pouch-tv-opened-v1";
+let opened = new Set();
+try { opened = new Set(JSON.parse(localStorage.getItem(STORE_KEY) || "[]")); } catch (e) {}
+function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify([...opened])); } catch (e) {} }
+const pad = n => String(n).padStart(2, "0");
+const colorOf = i => PALETTE[i % PALETTE.length];
+
+/* ---------- 화면 맞춤 ---------- */
+const stage = document.getElementById("stage");
+function fit(){
+  const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+}
+window.addEventListener("resize", fit); fit();
+
+function pouchSVG(i){
+  const [c, cd] = colorOf(i);
+  const id = "b" + i;
+  return `<svg viewBox="0 0 200 230" aria-hidden="true">
+    <defs><clipPath id="${id}"><ellipse cx="100" cy="148" rx="90" ry="78"/></clipPath></defs>
+    <path d="M52 70 Q40 30 62 12 Q80 24 100 14 Q120 24 138 12 Q160 30 148 70 Z" fill="${c}"/>
+    <path d="M86 30 q-8 16 -2 34" stroke="${cd}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M114 30 q8 16 2 34" stroke="${cd}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <g clip-path="url(#${id})">
+      <rect x="0" y="60" width="200" height="180" fill="${c}"/>
+      <rect x="0" y="190" width="200" height="50" fill="var(--band-y)"/>
+      <rect x="76" y="205" width="24" height="30" fill="var(--band-p)"/>
+      <rect x="100" y="205" width="26" height="30" fill="var(--band-m)"/>
+    </g>
+    <circle cx="100" cy="140" r="64" fill="#fff"/>
+    <path d="M42 72 Q100 62 158 72" stroke="#C9A86A" stroke-width="2.5" fill="none"/>
+    <circle cx="44" cy="72" r="6" fill="var(--band-m)" stroke="#fff" stroke-width="2"/>
+    <circle cx="156" cy="72" r="6" fill="var(--band-m)" stroke="#fff" stroke-width="2"/>
+    <path d="M156 72 q28 -16 30 8 q-10 6 -24 -4" stroke="#C9A86A" stroke-width="2" fill="none"/>
+    <path d="M186 80 q6 30 -4 46" stroke="#C9A86A" stroke-width="2" fill="none"/>
+    <circle cx="182" cy="128" r="4.5" fill="var(--band-m)"/><circle cx="182" cy="138" r="4.5" fill="var(--band-m)"/>
+    <path d="M178 142 h8 l2 18 h-12z" fill="#D8BC83"/>
+    <path d="M44 72 q-26 4 -30 30" stroke="#C9A86A" stroke-width="2" fill="none"/>
+    <circle cx="14" cy="106" r="4.5" fill="var(--band-m)"/><circle cx="14" cy="116" r="4.5" fill="var(--band-m)"/>
+    <path d="M10 120 h8 l2 18 h-12z" fill="#D8BC83"/>
+  </svg>`;
+}
+
+const grid = document.getElementById("grid");
+function renderGrid(){
+  grid.innerHTML = POUCHES.map((p, i) => `<li><button class="pouch ${opened.has(i) ? "opened" : ""}" data-i="${i}"
+      aria-label="${pad(i + 1)}번 복주머니, 주제 ${p.topic}">
+      ${pouchSVG(i)}
+      <span class="num">${pad(i + 1)}</span>
+      <span class="face"><b>${p.topic}</b><small>${p.type === "어서" ? "어서" : "이케다 선생님"}</small></span>
+    </button></li>`).join("");
+}
+
+/* ---------- popup ---------- */
+const overlay = document.getElementById("overlay");
+const modal = document.getElementById("modal");
+function openPouch(i){
+  const p = POUCHES[i];
+  const [c, cd] = colorOf(i);
+  modal.style.setProperty("--c", c);
+  modal.style.setProperty("--cd", cd);
+  document.getElementById("mTag").textContent = `${p.topic} · ${p.type === "어서" ? "어서" : "이케다 선생님 스피치"}`;
+  document.getElementById("mNum").textContent = pad(i + 1);
+  document.getElementById("mQuote").textContent = p.quote;
+  document.getElementById("mCite").textContent = `(${p.source})`;
+  document.getElementById("mText").textContent = p.text;
+  document.getElementById("mQ").textContent = p.q;
+  overlay.classList.add("show");
+  overlay.setAttribute("aria-hidden", "false");
+  document.getElementById("mNext").focus();
+  opened.add(i); save();
+}
+function closeModal(){
+  overlay.classList.remove("show");
+  overlay.setAttribute("aria-hidden", "true");
+  renderGrid();
+}
+const isOpen = () => overlay.classList.contains("show");
+
+let drawing = false;
+function randomDraw(){
+  if (drawing) return;
+  const all = POUCHES.map((_, i) => i);
+  const fresh = all.filter(i => !opened.has(i));
+  const pool = fresh.length ? fresh : all;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  drawing = true;
+  const els = [...grid.querySelectorAll(".pouch")];
+  els.forEach(el => el.classList.add("shake"));
+  setTimeout(() => {
+    els.forEach(el => el.classList.remove("shake"));
+    const el = grid.querySelector(`.pouch[data-i="${pick}"]`);
+    if (el) el.classList.add("picked");
+    setTimeout(() => { drawing = false; openPouch(pick); }, 550);
+  }, 1000);
+}
+function toggleFullscreen(){
+  try {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen().catch(() => {});
+  } catch (e) {}
+}
+
+grid.addEventListener("click", e => {
+  const b = e.target.closest(".pouch"); if (!b || drawing) return;
+  openPouch(Number(b.dataset.i));
+});
+document.getElementById("randomBtn").addEventListener("click", randomDraw);
+document.getElementById("resetBtn").addEventListener("click", () => { opened.clear(); save(); renderGrid(); });
+document.getElementById("fsBtn").addEventListener("click", toggleFullscreen);
+document.getElementById("mClose").addEventListener("click", closeModal);
+document.getElementById("mDone").addEventListener("click", closeModal);
+document.getElementById("mNext").addEventListener("click", () => { closeModal(); randomDraw(); });
+overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && isOpen()) { closeModal(); return; }
+  if ((e.key === "f" || e.key === "F") && !e.ctrlKey && !e.metaKey) { toggleFullscreen(); return; }
+  if (e.key === " " && !isOpen() && !(e.target instanceof HTMLButtonElement)) { e.preventDefault(); randomDraw(); }
+});
+
+renderGrid();
+</script>
+</body>
+</html>
